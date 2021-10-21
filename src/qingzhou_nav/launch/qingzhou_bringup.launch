@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="qingzhou_control" type="qingzhou_control" name="qingzhou_control" output="screen" respawn="true">
+    <param name="mcuserialport" value="/dev/stm32board" type="string" />
+    <param name="mcubaudrate" value="115200" type="int" />
+
+    <param name="calibrate_lineSpeed" value="0" type="int" />
+
+    <param name="ticksPerMeter" value="1200" type="int" /> <!-- 1235  -->
+    <param name="ticksPer2PI" value="3059" type="int" /> <!--  26500  5800  -->
+  </node>
+
+  <node pkg="imu_calib" type="apply_calib" name="apply_calib" output="screen" respawn="false">
+    <param name="calib_file" value="$(find qingzhou_nav)/config/imu_calib.yaml" />
+    <param name="calibrate_gyros" value="true" />
+    <remap from="raw" to="uncalibrated" />
+    <remap from="corrected" to="imu/data_raw" />
+  </node>
+
+  <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick" output="screen" respawn="true">
+    <param name="fixed_frame" value="odom" />
+    <param name="use_mag" value="true" />
+    <param name="publish_tf" value="false" />
+    <param name="use_magnetic_field_msg" value="true" />
+    <param name="world_frame" value="enu" />
+    <remap from="imu/data" to="imu_data" />
+  </node>
+
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen" respawn="true">
+    <param name="output_frame" value="odom" />
+    <param name="base_footprint_frame" value="base_link" />
+    <param name="freq" value="30.0" />
+    <param name="sensor_timeout" value="1.0" />
+    <param name="odom_used" value="true" />
+    <param name="imu_used" value="true" />
+    <param name="vo_used" value="false" />
+    <param name="gps_used" value="false" />
+    <param name="debug" value="false" />
+    <param name="self_diagnose" value="false" />
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_imulink" args="0.40 0.0 0.08 0.0 0.0  0.0 /base_link /imu_link 50" />
+</launch>
