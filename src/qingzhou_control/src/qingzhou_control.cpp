@@ -147,7 +147,6 @@ void Actuator::sendCarInfoKernel()
     buf[5] = (int)abs(moveBaseControl.TargetSpeed);    //targetSpeed期望线速度
     buf[6] = (int)moveBaseControl.TargetModeSelect;    //0-->person control,1-->auto control期望模式 人工/自动
     buf[7] = (int)moveBaseControl.TargetShiftPosition; //targetshiftposition  0-->P stop;1-->R;2-->D.期望档位 停止/倒车/前进
-    ROS_INFO("%d", moveBaseControl.TargetAngle);
 
     buf[8] = 0;
     unsigned char sum = 0;
