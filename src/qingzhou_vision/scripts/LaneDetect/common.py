@@ -148,7 +148,8 @@ def find_lane(img):
 
 
 def get_test_points(k1, b1, k2, b2):
-    y1, y2, y3, y4 = 810, 810, 1080, 1080
+    # y1, y2, y3, y4 = 810, 810, 1080, 1080
+    y1, y2, y3, y4 = 500, 500, 720, 720
     x1, x2, x3, x4 = int((y1-b2)//k2), int((y2-b1) //
                                            k1), int((y3-b2)//k2), int((y4-b1)//k1)
     return (x1, y1), (x2, y2), (x3, y3), (x4, y4)

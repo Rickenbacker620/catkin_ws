@@ -5,6 +5,10 @@ import os
 import random
 import sys
 
+import numpy as np
+
+from asd.util import say_hello
+
 sys.path.append('./YOLOv5')
 from YOLOv5.detect import detect as detect_box
 from YOLOv5.utils.plots import plot_one_box
@@ -170,15 +174,35 @@ class DetectService():
                 c = int(label)
                 plot_one_box(
                     xyxy, image_copy, label=self.names[c], color=self.colors[c], line_thickness=self.opt.line_thickness)
-        print("test")
 
         # 得到行驶方向
         return self.judge_direction(boxes)
 
     def detect_all(self, image):
-        direction = self.detect_direction(image)
+        # direction = self.detect_direction(image)
         (k1, b1), (k2, b2) = self.detect_line(image)
-        print(direction)
+        print(image.shape)
+        # 计算得到点
+        try:
+            pt1, pt2, pt3, pt4 = get_test_points(k1, b1, k2, b2)
+        except:
+            pt1, pt2, pt3, pt4 = (100, 100), (400, 100), (50, 200), (250, 200)
+
+        # 画出车道线
+        cv.line(image, pt1, pt3, (255, 255, 0), 3)
+        cv.line(image, pt2, pt4, (0, 255, 0), 3)
+        # cv.line(image, (100, 100), (50, 200), (255, 255, 0), 3)
+        # cv.line(image, (400, 100), (250, 200), (0, 255, 0), 3)
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # cap = cv2.VideoCapture(0,cv2.CAP_GSTREAMER)
+        img = cv.resize(image, (341, 256))  # 测试这个尺寸图像比较稳定，再大发送不稳定
+        img = cv.imencode('.jpeg', img)[1]      # 使用jpeg格式压缩图像
+        data_encode = np.array(img)
+        data = data_encode.tostring()   # 转换为byte
+        # cv2.waitKey(0)
+        s.sendto(data, ('192.168.2.109', 8989))
+        # print(direction)
         print(k1, b1, k2, b2)
 
 
@@ -234,17 +258,15 @@ def show_camera():
 
 if __name__ == '__main__':
 
-     svc = DetectService(opt=opt)
+    svc = DetectService(opt=opt)
 
-     cap = cv.VideoCapture(gstreamer_pipeline(
-         flip_method=0), cv.CAP_GSTREAMER)
-     idx = 0
-     if cap.isOpened():
-         while True:
-             idx = idx + 1
-             if(idx < 10000):
-                 continue
-             ret_val, image = cap.read()
-    # image = cv.imread(
-    # f'/home/yzu/catkin_ws/src/qingzhou_vision/scripts/images/test.png')
-             svc.detect_all(image)
+    cap = cv.VideoCapture(gstreamer_pipeline(
+        flip_method=0), cv.CAP_GSTREAMER)
+    idx = 0
+    if cap.isOpened():
+        while True:
+            idx = idx + 1
+            if(idx < 10000):
+                continue
+            ret_val, image = cap.read()
+            svc.detect_all(image)

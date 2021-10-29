@@ -3,7 +3,7 @@
 
 import rospy
 # import torch
-from aa.tt import sayhello
+from asd.util import say_hello
 # from std_msgs.msg import String
 
 
@@ -24,7 +24,7 @@ from aa.tt import sayhello
 if __name__ == '__main__':
     # print(sys.version)
     # print("hello")
-    sayhello()
+    say_hello()
 
     # try:
     #     talker()
