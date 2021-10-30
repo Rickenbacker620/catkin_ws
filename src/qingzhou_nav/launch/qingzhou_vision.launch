@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="qingzhou_vision" type="lanedetect.py" name="lanedetect" output="screen" respawn="true"/>
+
+	<node pkg="qingzhou_vision" type="imagepub.py" name="imagepub" output="screen" respawn="false"/>
+
+	<node pkg="qingzhou_mux" type="main.py" name="signalctrl" output="screen" respawn="false"/>
+</launch>

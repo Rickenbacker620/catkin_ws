@@ -7,7 +7,7 @@ from cv_bridge import CvBridge, CvBridgeError
 
 if __name__ == '__main__':
 
-    rospy.init_node('image_publisher', anonymous=True)
+    rospy.init_node('image_pub', anonymous=True)
 
     image_pub = rospy.Publisher("camera_image", Image, queue_size=1)
 

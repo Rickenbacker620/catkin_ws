@@ -10,6 +10,7 @@ from utils.camera import load_coefficients
 from utils.camera import undistort_image
 from utils.debug import image_sender
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 
 from cv_bridge import CvBridge, CvBridgeError
 from utils.debug import ImageSender
@@ -23,10 +24,10 @@ class DirectionNode:
 
         self.sender = ImageSender('192.168.2.143', 8989)
 
-        rospy.init_node('direction_detector', anonymous=True)
+        rospy.init_node('direction_detect', anonymous=True)
 
         self.sub = rospy.Subscriber('camera_image', Image, self.process, queue_size=1)
-        # pub = rospy.Publisher('lane_bias', Int32, queue_size=1)
+        self.pub = rospy.Publisher('direction', String, queue_size=1)
 
         self.detector = DirectionDetector(parameters)
 
@@ -36,6 +37,8 @@ class DirectionNode:
         direction = self.detector(image, debug=True)
 
         self.sender.send(self.detector.image_marked)
+
+        self.pub.publish(direction)
 
         # pub.publish(bias)
 

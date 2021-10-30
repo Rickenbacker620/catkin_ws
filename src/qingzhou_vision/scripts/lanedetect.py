@@ -9,7 +9,7 @@ from utils.camera import undistort_image
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from utils.debug import ImageSender
-
+from geometry_msgs.msg import Twist
 
 
 def process(image):
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     sender = ImageSender('192.168.2.143', 8989)
 
-    rospy.init_node('lane_detector', anonymous=True)
+    rospy.init_node('lane_detect', anonymous=True)
 
     sub = rospy.Subscriber('camera_image', Image, process, queue_size=1)
     pub = rospy.Publisher('lane_bias', Int32, queue_size=1)

@@ -16,7 +16,6 @@ import cv2 as cv
 # fmt: on
 
 
-
 class DirectionDetector():
     weights = 'YOLOv5/weights/last.pt'
     device = 'cuda',
@@ -36,9 +35,6 @@ class DirectionDetector():
             self.image_marked = image.copy()
         direction = self.detect_direction(image)
         return direction
-
-    def hello(self):
-        return "hello"
 
     def judge_direction(self, boxes):
         if boxes is None or len(boxes) == 0:
@@ -65,7 +61,8 @@ class DirectionDetector():
             for box in boxes:
                 label, xywh, conf, xyxy = box
                 c = int(label)
-                plot_one_box(xyxy, self.image_marked, label=self.names[c], color=self.colors[c], line_thickness=self.opt.line_thickness)
+                plot_one_box(xyxy, self.image_marked,
+                             label=self.names[c], color=self.colors[c], line_thickness=self.opt.line_thickness)
 
         # 得到行驶方向
         return self.judge_direction(boxes)
