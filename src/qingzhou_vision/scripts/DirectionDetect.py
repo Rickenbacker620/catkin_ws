@@ -10,6 +10,7 @@ from utils.camera import gstreamer_pipeline, load_coefficients
 from core.lane_detector import LaneDetector
 # from core.parameters import Parameters
 from utils.camera import undistort_image
+from utils.debug import image_sender
 
 
 parameters = SimpleNamespace(weights='/home/yzu/catkin_ws/src/qingzhou_vision/src/YOLOv5/weights/last.pt',
@@ -37,6 +38,8 @@ if __name__ == "__main__":
 
     cap = cv.VideoCapture("./SampleVid.mp4")
 
+    cap.set(cv.CAP_PROP_POS_FRAMES,1200)
+
     rate = rospy.Rate(1)
 
     mtx, dist = load_coefficients("/home/shiro/ROSProjs/catkin_ws/src/qingzhou_vision/config/calibration_chessboard.yml")
@@ -52,6 +55,9 @@ if __name__ == "__main__":
         undistort = cv.resize(undistort_image(image, mtx, dist), (640, 360))
 
         direction = detector(undistort,debug=True)
+
+        image_sender.send(detector.image_marked)
+
 
         if bias is None:
             bias = 0
