@@ -117,8 +117,6 @@ class LaneDetector:
                     cv.putText(self.image_marked, "zebra_line: " + str(self.has_zebra_lines),
                                (150, 20), cv.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 255))
                     image_sender.send(self.image_marked)
-                    print(self.image_marked.shape)
-                    # cv.imshow("img_with_lines", self.image_marked)
 
                 return bias_filtered
         else:

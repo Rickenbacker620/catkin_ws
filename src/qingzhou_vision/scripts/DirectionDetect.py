@@ -9,6 +9,35 @@ from std_msgs.msg import Int32
 from utils.camera import load_coefficients
 from utils.camera import undistort_image
 from utils.debug import image_sender
+from sensor_msgs.msg import Image
+
+from cv_bridge import CvBridge, CvBridgeError
+from utils.debug import ImageSender
+
+bridge = CvBridge()
+
+
+class DirectionNode:
+    def __init__(self) -> None:
+        self.bridge = CvBridge()
+
+        self.sender = ImageSender('192.168.2.143', 8989)
+
+        rospy.init_node('direction_detector', anonymous=True)
+
+        self.sub = rospy.Subscriber('camera_image', Image, self.process, queue_size=1)
+        # pub = rospy.Publisher('lane_bias', Int32, queue_size=1)
+
+        self.detector = DirectionDetector(parameters)
+
+    def process(self, image):
+        image = bridge.imgmsg_to_cv2(image, "bgr8")
+
+        direction = self.detector(image, debug=True)
+
+        self.sender.send(self.detector.image_marked)
+
+        # pub.publish(bias)
 
 
 parameters = SimpleNamespace(weights='/home/yzu/catkin_ws/src/qingzhou_vision/src/YOLOv5/weights/last.pt',
@@ -30,30 +59,5 @@ parameters = SimpleNamespace(weights='/home/yzu/catkin_ws/src/qingzhou_vision/sr
 
 
 if __name__ == "__main__":
-    rospy.init_node('direction_detector', anonymous=True)
-    detector = DirectionDetector(parameters)
-
-    cap = cv.VideoCapture("/home/yzu/catkin_ws/SampleVid.mp4")
-
-    cap.set(cv.CAP_PROP_POS_FRAMES, 1200)
-
-    mtx, dist = load_coefficients(
-        "/home/yzu/catkin_ws/src/qingzhou_vision/config/calibration_chessboard.yml")
-
-    rate = rospy.Rate(10)
-
-    while not rospy.is_shutdown():
-        # if (cv.waitKey(27) == 'q'):
-        #     break
-        _, image = cap.read()
-
-        if image.shape != (720, 1280):
-            image = cv.resize(image, (1280, 720))
-        undistort = cv.resize(undistort_image(image, mtx, dist), (640, 360))
-
-        direction = detector(undistort, debug=True)
-        print(direction)
-
-        image_sender.send(detector.image_marked)
-
-        rate.sleep()
+    node = DirectionNode()
+    rospy.spin()
