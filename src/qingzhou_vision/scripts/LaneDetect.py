@@ -7,9 +7,6 @@ from core.lane_detector import LaneDetector
 from core.parameters import Parameters
 from utils.camera import undistort_image
 
-WIDTH = 1920
-HEIGHT = 1080
-
 VIDEO = True
 
 
