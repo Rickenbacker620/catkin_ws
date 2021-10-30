@@ -1,5 +1,7 @@
+import socket
 from types import SimpleNamespace
 import cv2 as cv
+import numpy as np
 from utils.common import gen_window
 
 
@@ -30,3 +32,18 @@ class ParamPanel():
         for param in self._params:
             param_dict[param] = self.get_param(param)
         return SimpleNamespace(**param_dict)
+
+class ImageSender:
+    def __init__(self, url, port) -> None:
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.url = url
+        self.port = port
+
+    def send(self,image):
+        img = cv.resize(image, (341, 256))
+        img = cv.imencode('.jpeg', img)[1]
+        data_encode = np.array(img)
+        data = data_encode.tostring()
+        self.s.sendto(data, (self.url, self.port))
+
+image_sender = ImageSender('192.168.2.143',8989)

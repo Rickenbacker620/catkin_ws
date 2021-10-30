@@ -249,7 +249,6 @@ class Stabilizer:
         # return self.queue[-1]
 
     def push(self, data, threshold):
-        print(self.queue)
         if len(self.queue) == self.queue.maxlen:
             copy = self.queue.copy()
             copy.remove(np.max(copy))

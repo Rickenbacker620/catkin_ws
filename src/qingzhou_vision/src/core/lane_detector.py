@@ -7,6 +7,7 @@ import numpy as np
 from core.parameters import Parameters
 from utils.common import Stabilizer, calc_slope, fit_line, get_bias_points
 from utils.common import filter_abnormal_lines
+from utils.debug import image_sender
 from utils.draw import draw_lines, draw_points
 from utils.warp import get_trapezoid_pts
 
@@ -42,6 +43,7 @@ class LaneDetector:
         return k, b
 
     def preprocess(self, image):
+        # cv.imshow("image",image)
 
         # 灰度处理
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
@@ -61,7 +63,7 @@ class LaneDetector:
                                [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
                            color=255)
         roi = cv.bitwise_and(edge, edge, mask=mask)
-        cv.imshow("roi", roi)
+        # cv.imshow("roi", roi)
 
         return roi
 
@@ -114,7 +116,9 @@ class LaneDetector:
                                (20, 20), cv.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 255))
                     cv.putText(self.image_marked, "zebra_line: " + str(self.has_zebra_lines),
                                (150, 20), cv.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 255))
-                    cv.imshow("img_with_lines", self.image_marked)
+                    image_sender.send(self.image_marked)
+                    print(self.image_marked.shape)
+                    # cv.imshow("img_with_lines", self.image_marked)
 
                 return bias_filtered
         else:
