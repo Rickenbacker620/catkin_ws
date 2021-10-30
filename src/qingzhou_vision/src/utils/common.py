@@ -1,8 +1,7 @@
 from collections import deque
-import queue
+
 import cv2 as cv
 import numpy as np
-from queue import Queue
 
 
 class AverageMeter():
@@ -34,8 +33,8 @@ class AverageMeter():
 
         self.count += 1
 
-        self.avgk = self.sumk/self.count
-        self.avgb = self.sumb/self.count
+        self.avgk = self.sumk / self.count
+        self.avgb = self.sumb / self.count
 
 
 r_avg = AverageMeter()
@@ -49,11 +48,11 @@ def calc_slope(pt1, pt2):
     参数: 两点
     返回: 斜率
     '''
-    dx = (pt2[0]-pt1[0])
-    dy = (pt2[1]-pt1[1])
+    dx = (pt2[0] - pt1[0])
+    dy = (pt2[1] - pt1[1])
     if (dx == 0):
         dx = 1
-    return dy/dx
+    return dy / dx
 
 
 def fit_line(points):
@@ -66,8 +65,8 @@ def fit_line(points):
     line = cv.fitLine(points, distType=cv.DIST_L2,
                       param=0, reps=1e-2, aeps=1e-2).squeeze()
 
-    k = line[1]/line[0]
-    b = line[3] - k*line[2]
+    k = line[1] / line[0]
+    b = line[3] - k * line[2]
     return k, b
 
 
@@ -80,7 +79,7 @@ def pt2kb(pt1, pt2):
     '''
     k = calc_slope(pt1, pt2)
     x, y = pt2
-    b = y-k*x
+    b = y - k * x
     return k, b
 
 
@@ -94,8 +93,8 @@ def kb2pt(img, k, b):
     _, w = img.shape[0:2]
     x1 = 0
     x2 = w
-    y1 = int(k*x1+b)
-    y2 = int(k*x2+b)
+    y1 = int(k * x1 + b)
+    y2 = int(k * x2 + b)
     return (x1, y1), (x2, y2)
 
 
@@ -112,12 +111,12 @@ def filter_points(lines):
 
     # 根据斜率选出左右车道线
     right_lane = np.intersect1d(
-        np.where((1/3 < k) & (k < 1)),
+        np.where((1 / 3 < k) & (k < 1)),
         np.where((-600 < b) & (b < -450)))
     right_points = lines[right_lane].reshape(-1, 2)
 
     left_lane = np.intersect1d(
-        np.where((-1 < k) & (k < -(1/3))),
+        np.where((-1 < k) & (k < -(1 / 3))),
         np.where((150 < b) & (b < 450)))
     left_points = lines[left_lane].reshape(-1, 2)
 
@@ -130,7 +129,7 @@ def find_lane(img):
     edge = cv.Canny(blur, 50, 100)
 
     # 概率霍夫变换找出所有直线线段
-    lines = cv.HoughLinesP(edge, 1, np.pi/180, 50,
+    lines = cv.HoughLinesP(edge, 1, np.pi / 180, 50,
                            minLineLength=10, maxLineGap=50)
 
     # 确保确保至少有1条线段
@@ -154,8 +153,8 @@ def find_lane(img):
 
 def get_test_points(k1, b1, k2, b2):
     y1, y2, y3, y4 = 810, 810, 1080, 1080
-    x1, x2, x3, x4 = int((y1-b2)//k2), int((y2-b1) //
-                                           k1), int((y3-b2)//k2), int((y4-b1)//k1)
+    x1, x2, x3, x4 = int((y1 - b2) // k2), int((y2 - b1) //
+                                               k1), int((y3 - b2) // k2), int((y4 - b1) // k1)
     return (x1, y1), (x2, y2), (x3, y3), (x4, y4)
 
 
@@ -245,18 +244,21 @@ class Stabilizer:
     def data(self):
         sum = 0
         for idx, data in enumerate(self.queue):
-            sum += self.weighs[idx]*data
+            sum += self.weighs[idx] * data
         return sum
         # return self.queue[-1]
 
     def push(self, data, threshold):
+        print(self.queue)
         if len(self.queue) == self.queue.maxlen:
             copy = self.queue.copy()
             copy.remove(np.max(copy))
             copy.remove(np.min(copy))
             mean = np.mean(copy)
             diff = abs(data - mean)
-            if np.max(copy) == np.min(copy):
+            if np.max(copy) == np.min(copy) or abs(mean) > 100:
+                self.queue.pop()
+                self.queue.pop()
                 self.queue.pop()
                 self.queue.pop()
                 self.queue.append(data)
@@ -272,12 +274,12 @@ class Stabilizer:
 def get_bias(image, slope):
     copy = image.copy()
     h, w = image.shape[:2]
-    y_center = h//2
-    x_center = w//2
+    y_center = h // 2
+    x_center = w // 2
     dx = y_center // slope
-    return (x_center-dx, 0)
+    return (x_center - dx, 0)
 
 
 def get_bias_points(kr, br, kl, bl, y=240):
-    xr, xl = int((y-br)//kr), int((y-bl) // kl)
+    xr, xl = int((y - br) // kr), int((y - bl) // kl)
     return (xr, y), (xl, y)
