@@ -34,7 +34,8 @@ class DirectionDetector():
         if debug:
             self.debug = True
             self.image_marked = image.copy()
-        boxes = self.detect_direction(image)
+        direction = self.detect_direction(image)
+        return direction
 
     def hello(self):
         return "hello"

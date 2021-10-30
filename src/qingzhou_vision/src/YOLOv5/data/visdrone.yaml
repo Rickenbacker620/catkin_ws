@@ -23,7 +23,7 @@ download: |
   import os
   from pathlib import Path
 
-  from utils.general import download
+  from YOLOv5.utils.general import download
 
 
   def visdrone2yolo(dir):

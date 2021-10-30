@@ -12,15 +12,15 @@ import torch.backends.cudnn as cudnn
 from numpy import random
 import os
 
-sys.path.append('/home/yzu/catkin_ws/src/qingzhou_vision/scripts/YOLOv5')
+sys.path.append('/home/yzu/catkin_ws/src/qingzhou_vision/src/YOLOv5')
 
 from models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
+from .utils.datasets import LoadStreams, LoadImages
+from .utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from utils.plots import plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_synchronized
-from utils.datasets import letterbox
+from .utils.plots import plot_one_box
+from .utils.torch_utils import select_device, load_classifier, time_synchronized
+from .utils.datasets import letterbox
 # fmt: on
 
 
