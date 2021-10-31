@@ -15,10 +15,12 @@ class SignalHandler:
         print(twist)
 
     def bias_callback(self, bias):
-        order = Twist()
-        order.angular.z = -0.001*(bias.data)
-        order.linear.x = 0.05
-        self.vel_pub.publish(order)
+        pass
+        # order = Twist()
+        # order.angular.z = -0.003*(bias.data)
+        # print(bias, order.angular.z)
+        # order.linear.x = 0.05
+        # self.vel_pub.publish(order)
 
 
 if __name__ == "__main__":

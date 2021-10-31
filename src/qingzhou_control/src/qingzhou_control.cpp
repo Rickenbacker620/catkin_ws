@@ -113,6 +113,9 @@ void Actuator::run()
 {
     int run_rate = 50;
     ros::Rate rate(run_rate);
+    // if (ros::isShuttingDown()) {
+
+    // }
 
     while (ros::ok())
     {
@@ -132,6 +135,10 @@ void Actuator::run()
 
         rate.sleep();
     }
+
+    moveBaseControl.TargetAngle = 60;
+    moveBaseControl.TargetSpeed = 0;
+    sendCarInfoKernel();
 }
 
 //发送小车数据到下位机

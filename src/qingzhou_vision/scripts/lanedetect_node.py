@@ -28,7 +28,7 @@ def process(image):
 if __name__ == "__main__":
     bridge = CvBridge()
 
-    sender = ImageSender('192.168.2.143', 8989)
+    sender = ImageSender('192.168.2.109', 8989)
 
     rospy.init_node('lane_detect', anonymous=True)
 

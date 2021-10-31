@@ -58,10 +58,9 @@ class LaneDetector:
         roi_pts = get_trapezoid_pts(
             edge, self.parameters.roi.top, self.parameters.roi.bot)
         mask = np.zeros_like(edge)
-        mask = cv.fillPoly(mask,
-                           np.array(
-                               [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
-                           color=255)
+        mask = cv.fillPoly(mask, np.array(
+            [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
+            color=255)
         roi = cv.bitwise_and(edge, edge, mask=mask)
         # cv.imshow("roi", roi)
 

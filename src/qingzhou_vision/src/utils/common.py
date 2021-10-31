@@ -258,8 +258,6 @@ class Stabilizer:
             if np.max(copy) == np.min(copy) or abs(mean) > 100:
                 self.queue.pop()
                 self.queue.pop()
-                self.queue.pop()
-                self.queue.pop()
                 self.queue.append(data)
             elif diff < threshold:
                 self.queue.append(data)

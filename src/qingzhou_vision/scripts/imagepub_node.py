@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from utils.camera import load_coefficients, undistort_image
+from utils.camera import gstreamer_pipeline, load_coefficients, undistort_image
 import rospy
 import cv2 as cv
 from sensor_msgs.msg import Image
@@ -12,6 +12,8 @@ if __name__ == '__main__':
     image_pub = rospy.Publisher("camera_image", Image, queue_size=1)
 
     cap = cv.VideoCapture("/home/yzu/catkin_ws/SampleVid.mp4")
+    cap.set(cv.CAP_PROP_POS_FRAMES, 1000)
+    # cap = cv.VideoCapture(gstreamer_pipeline())
 
     mtx, dist = load_coefficients(
         "/home/yzu/catkin_ws/src/qingzhou_vision/config/calibration_chessboard.yml")
