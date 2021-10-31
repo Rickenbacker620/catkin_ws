@@ -80,8 +80,8 @@ void Actuator::callback_move_base(const geometry_msgs::Twist::ConstPtr &msg) //�
     moveBaseControl.TargetAngle = round(atan(w * CARL / v) * 57.3); //计算目标角度**************************************************
     moveBaseControl.TargetAngle += 60;
 
-    printf("%.2f,%.2f,%d,%d\n", msg->linear.x, msg->angular.z,
-           abs(moveBaseControl.TargetSpeed), abs(moveBaseControl.TargetAngle));
+    // printf("%.2f,%.2f,%d,%d\n", msg->linear.x, msg->angular.z,
+    //        abs(moveBaseControl.TargetSpeed), abs(moveBaseControl.TargetAngle));
 
     if (moveBaseControl.TargetAngle < 0)
     {

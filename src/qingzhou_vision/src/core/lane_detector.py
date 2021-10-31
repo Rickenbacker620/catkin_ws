@@ -43,7 +43,6 @@ class LaneDetector:
         return k, b
 
     def preprocess(self, image):
-        # cv.imshow("image",image)
 
         # 灰度处理
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
@@ -117,6 +116,6 @@ class LaneDetector:
                                (150, 20), cv.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 255))
                     image_sender.send(self.image_marked)
 
-                return bias_filtered
+                return self.has_zebra_lines, bias_filtered
         else:
-            return 0
+            return self.has_zebra_lines, 0
