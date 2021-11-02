@@ -23,7 +23,7 @@ class Parameters:
 
         # 斑马线参数
         zebra_slope_thresh = 0.1
-        zebra_line_count_thresh = 500
+        zebra_line_count_thresh = 30
 
         # 左右车道线筛选参数
         abnormal_left_thresh = 0.2

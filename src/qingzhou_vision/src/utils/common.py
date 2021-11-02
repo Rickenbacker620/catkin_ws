@@ -246,25 +246,24 @@ class Stabilizer:
         for idx, data in enumerate(self.queue):
             sum += self.weighs[idx] * data
         return sum
-        # return self.queue[-1]
 
     def push(self, data, threshold):
-        if abs(data) > 100:
+        if abs(data) > 80:
             return
         if len(self.queue) == self.queue.maxlen:
             copy = self.queue.copy()
             copy.remove(np.max(copy))
             copy.remove(np.min(copy))
-            mean = np.mean(copy)
-            diff = abs(data - mean)
-            if np.max(copy) == np.min(copy) or abs(mean) > 100:
-                for i in range(len(self.queue) - 2):
-                    self.queue.pop()
-                self.queue.append(data)
-            elif diff < threshold:
-                self.queue.append(data)
-            else:
-                self.queue.append(mean)
+            # mean = np.mean(copy)
+            # diff = abs(data - mean)
+            # if np.max(copy) == np.min(copy) or abs(mean) > 100:
+            #     for i in range(len(self.queue) - 2):
+            #         self.queue.pop()
+            #     self.queue.append(data)
+            # elif diff < threshold:
+            #     self.queue.append(data)
+            # else:
+            self.queue.append(data)
 
         else:
             self.queue.append(data)

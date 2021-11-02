@@ -25,7 +25,7 @@ class LaneDetector:
         self.right_color = (0, 255, 0)
         self.center_color = (0, 0, 255)
         self.stabilizer = Stabilizer()
-        self.zebra_lines_queue = deque(maxlen=30)
+        self.zebra_lines_queue = deque(maxlen=8)
         self.has_zebra_lines = False
 
     def __call__(self, image, debug=False):
@@ -33,7 +33,9 @@ class LaneDetector:
             self.debug = True
             self.image_marked = image.copy()
         preprocessed_image = self.preprocess(image)
-        return self.find_bias(preprocessed_image)
+        bias = self.find_bias(preprocessed_image)
+        zebra = self.find_zebra(preprocessed_image)
+        return bias, zebra
 
     @staticmethod
     def merge_lines(lines, abnormal_thresh):
@@ -41,6 +43,18 @@ class LaneDetector:
         pts = np.array(lines).reshape(-1, 2)
         k, b = fit_line(pts)
         return k, b
+
+    def find_zebra(self, image):
+        baseline = image[300, ...]
+        try:
+            distributes = np.argwhere(baseline > 0).squeeze()
+            intervals = np.diff(distributes)
+            strip_cnt = np.count_nonzero((30 < intervals) & (intervals < 60))
+        except ValueError:
+            strip_cnt = 0
+        self.zebra_lines_queue.append(strip_cnt)
+        self.has_zebra_lines = True if np.sum(
+            self.zebra_lines_queue) > self.parameters.lane.zebra_line_count_thresh else False
 
     def preprocess(self, image):
 
@@ -59,10 +73,8 @@ class LaneDetector:
         mask = np.zeros_like(edge)
         mask = cv.fillPoly(mask, np.array(
             [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
-            color=255)
+                           color=255)
         roi = cv.bitwise_and(edge, edge, mask=mask)
-        # cv.imshow("roi", roi)
-
         return roi
 
     def find_bias(self, image):
@@ -78,11 +90,6 @@ class LaneDetector:
             left_lines = [line for line in lines if -10 < calc_slope((line[0], line[1]), (line[2], line[3])) < -0.2]
             vertical_lines = [line for line in lines if abs(calc_slope(
                 (line[0], line[1]), (line[2], line[3]))) < self.parameters.lane.zebra_slope_thresh]
-
-            self.zebra_lines_queue.append(len(vertical_lines))
-
-            self.has_zebra_lines = True if np.sum(
-                self.zebra_lines_queue) > self.parameters.lane.zebra_line_count_thresh else False
 
             if len(left_lines) != 0 and len(right_lines) != 0:
 
