@@ -59,7 +59,7 @@ class LaneDetector:
         mask = np.zeros_like(edge)
         mask = cv.fillPoly(mask, np.array(
             [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
-            color=255)
+                           color=255)
         roi = cv.bitwise_and(edge, edge, mask=mask)
         # cv.imshow("roi", roi)
 
@@ -74,8 +74,8 @@ class LaneDetector:
         if lines is not None:
             lines = lines.reshape(-1, 4).tolist()
 
-            right_lines = [line for line in lines if 0 < calc_slope((line[0], line[1]), (line[2], line[3])) < 10]
-            left_lines = [line for line in lines if -10 < calc_slope((line[0], line[1]), (line[2], line[3])) < 0]
+            right_lines = [line for line in lines if 0.2 < calc_slope((line[0], line[1]), (line[2], line[3])) < 10]
+            left_lines = [line for line in lines if -10 < calc_slope((line[0], line[1]), (line[2], line[3])) < -0.2]
             vertical_lines = [line for line in lines if abs(calc_slope(
                 (line[0], line[1]), (line[2], line[3]))) < self.parameters.lane.zebra_slope_thresh]
 

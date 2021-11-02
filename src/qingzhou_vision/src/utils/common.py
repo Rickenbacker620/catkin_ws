@@ -231,7 +231,7 @@ class Stabilizer:
         # def half_norm(x):
         #     return np.exp(-np.square(x)/2)*(np.sqrt(2/np.pi))
 
-        self.weighs = np.arange(30, 1, -3)
+        self.weighs = np.arange(20, 1, -3)
 
         self.weighs = self.weighs / np.sum(self.weighs)
 
@@ -249,6 +249,8 @@ class Stabilizer:
         # return self.queue[-1]
 
     def push(self, data, threshold):
+        if abs(data) > 100:
+            return
         if len(self.queue) == self.queue.maxlen:
             copy = self.queue.copy()
             copy.remove(np.max(copy))
@@ -256,8 +258,8 @@ class Stabilizer:
             mean = np.mean(copy)
             diff = abs(data - mean)
             if np.max(copy) == np.min(copy) or abs(mean) > 100:
-                self.queue.pop()
-                self.queue.pop()
+                for i in range(len(self.queue) - 2):
+                    self.queue.pop()
                 self.queue.append(data)
             elif diff < threshold:
                 self.queue.append(data)
