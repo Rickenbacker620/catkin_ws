@@ -15,6 +15,7 @@ def process(image):
     image = bridge.imgmsg_to_cv2(image, "bgr8")
 
     zebra, bias = detector(image, debug=True)
+    print(zebra, bias)
 
     if bias is None:
         bias = 0
@@ -28,7 +29,7 @@ def process(image):
 if __name__ == "__main__":
     bridge = CvBridge()
 
-    sender = ImageSender('192.168.2.165', 8989)
+    sender = ImageSender('192.168.2.109', 8989)
 
     rospy.init_node('lane_detect', anonymous=True)
 

@@ -59,7 +59,7 @@ class LaneDetector:
         mask = np.zeros_like(edge)
         mask = cv.fillPoly(mask, np.array(
             [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
-                           color=255)
+            color=255)
         roi = cv.bitwise_and(edge, edge, mask=mask)
         # cv.imshow("roi", roi)
 
@@ -98,6 +98,8 @@ class LaneDetector:
                 self.stabilizer.push(bias, threshold=self.parameters.lane.bias_stabilizer_thresh)
 
                 bias_filtered = int(self.stabilizer.data)
+                if bias_filtered is None:
+                    bias_filtered = 0
 
                 if self.debug is True:
                     draw_lines(self.image_marked, *left_lines, color=self.left_color)

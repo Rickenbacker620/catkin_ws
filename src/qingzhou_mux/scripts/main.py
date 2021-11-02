@@ -21,7 +21,7 @@ class SignalHandler:
         self.dir_sub = rospy.Subscriber("scan", LaserScan, self.laser_scan_callback, queue_size=1)
         self.obstacle_detect = rospy.Subscriber("direction", String, self.direction_callback, queue_size=1)
         self.light_sub = rospy.Subscriber("traffic_light", String, self.traffic_light_callback, queue_size=1)
-        self.nav_sub = rospy.Subscriber("nav_vel", Twist, self.nav_sub, queue_size=1)
+        self.nav_sub = rospy.Subscriber("nav_vel", Twist, self.nav_callback, queue_size=1)
 
         self.vel_pub = rospy.Publisher("cmd_vel", Twist, queue_size=1)
 
@@ -82,15 +82,16 @@ class SignalHandler:
             turn = -0.003*(self.bias)
             velocity = 0.05
 
-            if self.has_zebra is True:
-                velocity = 0
-            else:
-                velocity = 0.05
+            # if self.has_zebra is True:
+            #     velocity = 0
+            # else:
+            #     velocity = 0.05
+            velocity = 0.1
 
             bias_dir = "Left" if self.bias > 0 else "Right"
             vel_dir = "Left" if turn > 0 else "Right"
 
-            # print(f"Bias {bias_dir} {abs(self.bias)}, Turning {vel_dir} {abs(turn)}")
+            print(f"Bias {bias_dir} {abs(self.bias)}, Turning {vel_dir} {abs(turn)}")
 
             order.angular.z = turn
 
@@ -98,9 +99,9 @@ class SignalHandler:
 
             order.linear.x = velocity
 
-            # self.vel_pub.publish(order)
-            self.get_status()
-            print(self.state)
+            self.vel_pub.publish(order)
+            # self.get_status()
+            # print(self.state)
 
             self.rate.sleep()
 

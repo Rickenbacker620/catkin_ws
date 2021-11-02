@@ -3,13 +3,13 @@
   <master auto="start" />
 
   <include file="$(find qingzhou_nav)/launch/ydlidar.launch" />
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/dom1.yaml" output="screen" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/LAB.yaml" output="screen" />
 
   <include file="$(find qingzhou_nav)/launch/amcl.launch" />
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 
-    <remap from="cmd_vel" to="nav_vel"/>
+    <!-- <remap from="cmd_vel" to="nav_vel"/> -->
 
     <rosparam file="$(find qingzhou_nav)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find qingzhou_nav)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
