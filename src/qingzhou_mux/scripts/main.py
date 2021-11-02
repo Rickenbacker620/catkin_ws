@@ -2,7 +2,7 @@
 from datetime import date
 from logging import shutdown
 import rospy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import PoseStamped, Twist
 from std_msgs.msg import Int32, Bool, String
 from sensor_msgs.msg import LaserScan
 from enum import Enum, auto
@@ -21,9 +21,11 @@ class SignalHandler:
         self.dir_sub = rospy.Subscriber("scan", LaserScan, self.laser_scan_callback, queue_size=1)
         self.obstacle_detect = rospy.Subscriber("direction", String, self.direction_callback, queue_size=1)
         self.light_sub = rospy.Subscriber("traffic_light", String, self.traffic_light_callback, queue_size=1)
+        self.nav_sub = rospy.Subscriber("nav_vel", Twist, self.nav_sub, queue_size=1)
 
         self.vel_pub = rospy.Publisher("cmd_vel", Twist, queue_size=1)
 
+        self.nav_vel = Twist()
         self.has_zebra = False
         self.bias = False
         self.rate = rospy.Rate(10)
@@ -56,9 +58,11 @@ class SignalHandler:
         else:
             self.state = self.GO_STRAIGHT
 
+    def do_turn_left(self):
+        goal = PoseStamped()
+
     def nav_callback(self, twist):
-        pass
-        # print(twist)
+        self.nav_vel = twist
 
     def direction_callback(self, direction):
         self.has_zebra = direction.data
