@@ -34,8 +34,8 @@ class LaneDetector:
             self.image_marked = image.copy()
         preprocessed_image = self.preprocess(image)
         bias = self.find_bias(preprocessed_image)
-        zebra = self.find_zebra(preprocessed_image)
-        return bias, zebra
+        self.find_zebra(preprocessed_image)
+        return self.has_zebra_lines, bias
 
     @staticmethod
     def merge_lines(lines, abnormal_thresh):
@@ -50,7 +50,7 @@ class LaneDetector:
             distributes = np.argwhere(baseline > 0).squeeze()
             intervals = np.diff(distributes)
             strip_cnt = np.count_nonzero((30 < intervals) & (intervals < 60))
-        except ValueError:
+        except:
             strip_cnt = 0
         self.zebra_lines_queue.append(strip_cnt)
         self.has_zebra_lines = True if np.sum(
@@ -73,7 +73,7 @@ class LaneDetector:
         mask = np.zeros_like(edge)
         mask = cv.fillPoly(mask, np.array(
             [[roi_pts[0], roi_pts[1], roi_pts[3], roi_pts[2]]]),
-                           color=255)
+            color=255)
         roi = cv.bitwise_and(edge, edge, mask=mask)
         return roi
 
@@ -105,8 +105,6 @@ class LaneDetector:
                 self.stabilizer.push(bias, threshold=self.parameters.lane.bias_stabilizer_thresh)
 
                 bias_filtered = int(self.stabilizer.data)
-                if bias_filtered is None:
-                    bias_filtered = 0
 
                 if self.debug is True:
                     draw_lines(self.image_marked, *left_lines, color=self.left_color)
@@ -124,7 +122,8 @@ class LaneDetector:
                     cv.putText(self.image_marked, "zebra_line: " + str(self.has_zebra_lines),
                                (150, 20), cv.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 255))
                     image_sender.send(self.image_marked)
-
-                return self.has_zebra_lines, bias_filtered
+                    return bias_filtered
+            else:
+                return 0
         else:
-            return self.has_zebra_lines, 0
+            return 0

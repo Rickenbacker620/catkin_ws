@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-from datetime import date
+import time
 from logging import shutdown
 import rospy
 from geometry_msgs.msg import PoseStamped, Twist
 from std_msgs.msg import Int32, Bool, String
 from sensor_msgs.msg import LaserScan
-from enum import Enum, auto
+from simple_pid import PID
 
 
 class SignalHandler:
-    TURN_LEFT = 0
-    TURN_RIGHT = 1
-    GO_STRAIGHT = 2
-    AVOID_OBSTACLE = 3
+    TURN_LEFT = "L"
+    TURN_RIGHT = "R"
+    GO_STRAIGHT = "S"
+    AVOID_OBSTACLE = "A"
+    STOP = "P"
 
     def __init__(self) -> None:
         rospy.init_node('mux_controller', anonymous=True)
@@ -33,7 +34,11 @@ class SignalHandler:
         self.direction = "None"
         self.traffic_light = "None"
 
-        self.state = 2
+        self.state = self.GO_STRAIGHT
+
+        self.last_time = time.time()
+
+        self.pid = PID(0.001, 0, 0.0001, setpoint=0, output_limits=(-0.03, 0.03))
 
     def laser_scan_callback(self, laser: LaserScan):
         obs_angular_range = 20
@@ -44,23 +49,23 @@ class SignalHandler:
         self.has_obstacle = has_obstacle_array.count(True) > beam_count_threshold
 
     def get_status(self):
-        if self.has_obstacle == True or self.has_zebra == True:
+        if self.has_obstacle == True:
             if self.direction in ["Left", "Left-Straight"]:
                 self.state = self.TURN_LEFT
             elif self.direction in ["Right", "Right-Straight"]:
                 self.state = self.TURN_RIGHT
             else:
                 self.state = self.AVOID_OBSTACLE
-        elif self.direction == "Right":
-            self.state = self.TURN_RIGHT
-        elif self.direction == "Left":
-            self.state = self.TURN_LEFT
         else:
-            self.state = self.GO_STRAIGHT
+            if self.has_zebra == True:
+                if self.traffic_light == "Green":
+                    self.state = self.GO_STRAIGHT
+                else:
+                    self.state = self.STOP
+            else:
+                self.state = self.GO_STRAIGHT
 
-    def do_turn_left(self):
-        goal = PoseStamped()
-
+    # 接受节点信息
     def nav_callback(self, twist):
         self.nav_vel = twist
 
@@ -75,33 +80,33 @@ class SignalHandler:
 
     def bias_callback(self, bias):
         self.bias = bias.data
+    # 接受节点信息
+
+    def handle_straight(self):
+        dt = time.time() - self.last_time
+        self.last_time = time.time()
+
+        turn = self.pid(self.bias, dt)
+        velocity = 0.1
+
+        bias_dir = "Left" if self.bias > 0 else "Right"
+        vel_dir = "Left" if turn > 0 else "Right"
+
+        order = Twist()
+        order.angular.z = turn
+        order.linear.x = velocity
+
+        print(f"Bias {bias_dir} {self.bias}, Turning {vel_dir} {turn}")
+
+        # print(self.has_zebra, velocity)
+
+        self.vel_pub.publish(order)
 
     def core_process(self):
         while not rospy.is_shutdown():
-            order = Twist()
-            turn = -0.003*(self.bias)
-            velocity = 0.05
-
-            # if self.has_zebra is True:
-            #     velocity = 0
-            # else:
-            #     velocity = 0.05
-            velocity = 0.1
-
-            bias_dir = "Left" if self.bias > 0 else "Right"
-            vel_dir = "Left" if turn > 0 else "Right"
-
-            print(f"Bias {bias_dir} {abs(self.bias)}, Turning {vel_dir} {abs(turn)}")
-
-            order.angular.z = turn
-
-            # print(self.has_zebra, velocity)
-
-            order.linear.x = velocity
-
-            self.vel_pub.publish(order)
-            # self.get_status()
-            # print(self.state)
+            print(self.state)
+            if self.state == self.GO_STRAIGHT:
+                self.handle_straight()
 
             self.rate.sleep()
 
