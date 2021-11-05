@@ -11,9 +11,9 @@ if __name__ == '__main__':
 
     image_pub = rospy.Publisher("camera_image", Image, queue_size=1)
 
-    cap = cv.VideoCapture("/home/yzu/catkin_ws/SampleVid.mp4")
-    cap.set(cv.CAP_PROP_POS_FRAMES, 2500)
-    # cap = cv.VideoCapture(gstreamer_pipeline())
+    # cap = cv.VideoCapture("/home/yzu/catkin_ws/SampleVid.mp4")
+    # cap.set(cv.CAP_PROP_POS_FRAMES, 2500)
+    cap = cv.VideoCapture(gstreamer_pipeline())
 
     mtx, dist = load_coefficients(
         "/home/yzu/catkin_ws/src/qingzhou_vision/config/calibration_chessboard.yml")

@@ -88,8 +88,6 @@ class LaneDetector:
 
             right_lines = [line for line in lines if 0.2 < calc_slope((line[0], line[1]), (line[2], line[3])) < 10]
             left_lines = [line for line in lines if -10 < calc_slope((line[0], line[1]), (line[2], line[3])) < -0.2]
-            vertical_lines = [line for line in lines if abs(calc_slope(
-                (line[0], line[1]), (line[2], line[3]))) < self.parameters.lane.zebra_slope_thresh]
 
             if len(left_lines) != 0 and len(right_lines) != 0:
 
@@ -109,7 +107,6 @@ class LaneDetector:
                 if self.debug is True:
                     draw_lines(self.image_marked, *left_lines, color=self.left_color)
                     draw_lines(self.image_marked, *right_lines, color=self.right_color)
-                    draw_lines(self.image_marked, *vertical_lines, color=(0, 255, 255))
                     draw_points(self.image_marked, ptr, color=self.right_color)
                     draw_points(self.image_marked, ptl, color=self.left_color)
                     bias_direction = "left" if bias_filtered > 0 else "right"

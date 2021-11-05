@@ -87,7 +87,7 @@ class SignalHandler:
         self.last_time = time.time()
 
         turn = self.pid(self.bias, dt)
-        velocity = 0.1
+        velocity = 0.2
 
         bias_dir = "Left" if self.bias > 0 else "Right"
         vel_dir = "Left" if turn > 0 else "Right"
