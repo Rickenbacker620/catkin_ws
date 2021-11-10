@@ -15,7 +15,6 @@ def process(image):
     image = bridge.imgmsg_to_cv2(image, "bgr8")
 
     zebra, bias = detector(image, debug=True)
-    print(zebra, bias)
 
     if bias is None:
         bias = 0

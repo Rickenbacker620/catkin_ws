@@ -26,8 +26,9 @@ Actuator::Actuator()
     private_nh.param("mcubaudrate", m_baudrate, m_baudrate);                           //波特率
     private_nh.param("mcuserialport", m_serialport, std::string("/dev/ttyUSB0"));      //定义传输的串口
     private_nh.param("calibrate_lineSpeed", calibrate_lineSpeed, calibrate_lineSpeed); //标定线速度
-    private_nh.param("ticksPerMeter", ticksPerMeter, ticksPerMeter);                   //一米脉冲数
-    private_nh.param("ticksPer2PI", ticksPer2PI, ticksPer2PI);                         //每圈脉冲数
+    std::cout << calibrate_lineSpeed << endl;
+    private_nh.param("ticksPerMeter", ticksPerMeter, ticksPerMeter); //一米脉冲数
+    private_nh.param("ticksPer2PI", ticksPer2PI, ticksPer2PI);       //每圈脉冲数
 
     try
     { //异常处理

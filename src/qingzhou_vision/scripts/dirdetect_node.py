@@ -43,7 +43,7 @@ class DirectionNode:
         # pub.publish(bias)
 
 
-parameters = SimpleNamespace(weights='/home/yzu/catkin_ws/src/qingzhou_vision/src/YOLOv5/weights/last.pt',
+parameters = SimpleNamespace(weights='/home/yzu/catkin_ws/src/qingzhou_vision/src/YOLOv5/weights/best.pt',
                              source='YOLOv5/tsttt.png',
                              img_size=640,
                              conf_thres=0.25,

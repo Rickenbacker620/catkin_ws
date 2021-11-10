@@ -5,10 +5,11 @@
     <param name="mcubaudrate" value="115200" type="int" />
 
     <param name="calibrate_lineSpeed" value="0" type="int" />
+    <!-- <param name="calibrate_angularSpeed" value = "1" type = "int"/> -->
 
-    <param name="ticksPerMeter" value="1200" type="int" />
+    <param name="ticksPerMeter" value="1290" type="int" />
     <!-- 1235  -->
-    <param name="ticksPer2PI" value="3059" type="int" />
+    <param name="ticksPer2PI" value="2022" type="int" />
 
     <!-- <remap from="uncalibrated" to="raw"/> -->
 

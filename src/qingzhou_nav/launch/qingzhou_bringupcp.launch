@@ -3,6 +3,7 @@
 
   <node name="qingzhou_control" pkg="qingzhou_control" type="qingzhou_control" output="screen" respawn="true">
     <remap from="uncalibrated" to="raw"/>
+    <param name="calibrate_lineSpeed" value = "1" type = "int"/>
 
   </node>
 
@@ -12,7 +13,7 @@
   <param name="mcuserialport" value="/dev/stm32board" type="string"/>
   <param name="mcubaudrate" value = "115200" type = "int"/>
 
-  <param name="calibrate_lineSpeed" value = "0" type = "int"/>
+  <param name="calibrate_lineSpeed" value = "1" type = "int"/>
   <param name="calibrate_angularSpeed" value = "0" type = "int"/>
   <param name="ticksPerMeter" value = "1200" type = "int"/>
   <!-- 1235  -->

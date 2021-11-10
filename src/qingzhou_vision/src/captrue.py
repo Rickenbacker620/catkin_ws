@@ -1,34 +1,24 @@
-import cv2 as cv
-from utils.camera import gstreamer_pipeline, load_coefficients, undistort_image
+import numpy as np
+import cv2
+from utils.camera import gstreamer_pipeline
 from utils.debug import ImageSender
 
-if __name__ == '__main__':
+sender = ImageSender("192.168.2.109", 8989)
 
-    # cap = cv.VideoCapture("/home/yzu/catkin_ws/SampleVid.mp4")
-    print("1")
-    cap = cv.VideoCapture(gstreamer_pipeline())
+cap = cv2.VideoCapture(gstreamer_pipeline())
 
-    mtx, dist = load_coefficients(
-        "/home/yzu/catkin_ws/src/qingzhou_vision/config/calibration_chessboard.yml")
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('output.avi', fourcc, 10.0, (1280, 720))
 
-    sender = ImageSender("192.168.2.109", 8989)
-
-    counter = 0
-
-    while True:
-
-        _, image = cap.read()
-        if image.shape != (720, 1280):
-            image = cv.resize(image, (1280, 720))
-
-        # 去除畸变
-        undistort = cv.resize(undistort_image(image, mtx, dist), (640, 360))
-
-        sender.send(undistort)
-
-        capture = input("cap")
-
-        if capture == 'y':
-            cv.imwrite("/home/yzu/catkin_ws/images/cap" + str(counter) + ".png", undistort)
-
-        counter += 1
+while(cap.isOpened()):
+    try:
+        ret, frame = cap.read()
+        if ret == True:
+            out.write(frame)
+            sender.send(frame)
+        else:
+            break
+    except KeyboardInterrupt:
+        break
+cap.release()
+out.release()

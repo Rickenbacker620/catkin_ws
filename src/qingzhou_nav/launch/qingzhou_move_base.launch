@@ -3,11 +3,14 @@
   <master auto="start" />
 
   <include file="$(find qingzhou_nav)/launch/ydlidar.launch" />
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/LAB.yaml" output="screen" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/LAB2.yaml" output="screen" />
+  <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/dom1.yaml" output="screen" /> -->
 
   <include file="$(find qingzhou_nav)/launch/amcl.launch" />
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+    <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /> -->
 
     <!-- <remap from="cmd_vel" to="nav_vel"/> -->
 
@@ -16,6 +19,7 @@
     <rosparam file="$(find qingzhou_nav)/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find qingzhou_nav)/config/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find qingzhou_nav)/config/base_local_planner_params.yaml" command="load" />
+    <!-- <rosparam file="$(find qingzhou_nav)/config/dwa_local_planner_params.yaml" command="load" /> -->
   </node>
 
 
